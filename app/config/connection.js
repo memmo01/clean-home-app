@@ -1,7 +1,7 @@
 let mysql = require("mysql");
 
 let connection = mysql.createConnection({
-  port: process.env.PORT,
+  port: process.env.sqlPort,
   host: "localhost",
   user: process.env.user,
   password: process.env.password,

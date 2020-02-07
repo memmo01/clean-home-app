@@ -5,8 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Clean Home Landing Page</title>
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
   </head>
   <body>
-    working
+    <header>
+      <a href="#" class="header-brand">Clean House App</a>
+      <nav>
+        <ul>
+          <li>Add House</li>
+          <li>Edit House</li>
+          <li>About App</li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <!-- the name will change and load dynamically -->
+      <h1>Hi Mike!</h1>
+
+      <!-- this part will load dynamically with different messages -->
+      <p>it looks like the house is clean!</p>
+      <section class="house-group">
+        <!-- location will load dynamically -->
+        <h2>Charlotte, NC</h2>
+
+        <ul>
+          <li id="house-1">
+            <div class="house-overlay">
+              <a href="#">
+                <h3>Lemmons Household</h3>
+                <div class="percentage-clean">95%</div>
+
+                <div class="progress-bar"></div>
+              </a>
+            </div>
+          </li>
+        </ul>
+      </section>
+    </main>
   </body>
 </html>
