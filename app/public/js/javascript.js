@@ -7,16 +7,21 @@
 // function creating html dynamically
 
 let roomData;
+if (window.location.pathname === "/rooms") {
+  loadData("getrooms", false);
+} else {
+  loadData("getrooms", true);
+}
 
-function loadRooms() {
-  $.get("/api/getrooms", function(data) {
+function loadData(location, needAverage) {
+  $.get("/api/" + location, function(data) {
     return data;
   })
     .done(function(data) {
       if (data) {
         roomData = data;
         console.log(roomData);
-        sortData();
+        needAverage ? getAverage(data) : sortData();
       } else {
         return;
       }
@@ -77,4 +82,13 @@ function colorCheck(percent) {
     return "red";
   }
 }
-loadRooms();
+
+//get average cleanliness of whole house
+function getAverage(data) {
+  let percentages = 0;
+
+  for (let i = 0; i < data.length; i++) {
+    percentages += data[i].percent;
+  }
+  return percentages / data.length;
+}
