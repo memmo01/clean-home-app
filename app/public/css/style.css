@@ -494,8 +494,9 @@ main .house-group ul li {
 }
 
 #house-1 {
-  background-image: url("../images/JLIEE7006.JPG");
+  /* background-image: url("../images/JLIEE7006.JPG"); */
   background-size: cover;
+  background-color: gray;
 }
 
 .house-overlay {
