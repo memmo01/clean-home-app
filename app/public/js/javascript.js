@@ -25,7 +25,13 @@ function constructData(data, wholeHouse) {
   if (wholeHouse) {
     let average = Math.round(cleanpoints / rooms);
 
-    createHouseDisplay(data, average, data[0].location, data[0].image);
+    createHouseDisplay(
+      data,
+      average,
+      data[0].location,
+      data[0].image,
+      "/rooms"
+    );
   }
 }
 
@@ -36,16 +42,30 @@ function checkRoomStats(data, wholeHouse) {
   let end = moment(data.end_date);
   let daysLeft = end.diff(now, "days");
   daysLeft = parseInt(daysLeft);
+  let cleanName = urlPrep(data.room);
+  if (daysLeft < 0) {
+    daysLeft = 0;
+  }
 
   let percentage = createPercentage(daysLeft, data.cleaning_time);
 
-  //this add the percentages of rooms up for house view
-  if (wholeHouse) {
-    cleanpoints += percentage;
-  } else {
-    // create individual room data if on rooms page
-    createHouseDisplay(data, percentage, data.room, data.img);
-  }
+  wholeHouse
+    ? (cleanpoints += percentage) //this add the percentages of rooms up for house view
+    : createHouseDisplay(
+        data,
+        percentage,
+        data.room,
+        data.img,
+        "/rooms/" + cleanName + "/" + data.id
+      ); // create individual room data if on rooms page
+}
+
+function urlPrep(input) {
+  let urlText = input
+    .split(" ")
+    .join("-")
+    .toLowerCase();
+  return urlText;
 }
 
 // percentage function
@@ -55,7 +75,7 @@ function createPercentage(daysLeft, cleaning_time) {
 }
 
 // dynamically create display of house average data or individual room data
-function createHouseDisplay(data, percent, title, background_image) {
+function createHouseDisplay(data, percent, title, background_image, link) {
   let backgroundcolor = colorCheck(percent);
 
   let li = $("<li>");
@@ -66,13 +86,21 @@ function createHouseDisplay(data, percent, title, background_image) {
   let progressbar = $("<div>");
 
   h3.text(title);
-  percentClean.text(percent + "%");
+  if (percent <= 0) {
+    percentClean.text("Needs Cleaning");
+    percentClean.css("background-color", "rgba(0,0,0,.7)");
+    percentClean.css("font-size", "35px");
+    percentClean.css("color", "red");
+  } else {
+    percentClean.text(percent + "%");
+  }
+
   percentClean.addClass("percentage-clean");
   progressbar.addClass("progress-bar");
   progressbar.css("width", percent + "%");
   progressbar.css("background-color", backgroundcolor);
 
-  a.attr("href", "/rooms");
+  a.attr("href", "" + link + "");
   div.addClass("house-overlay");
   li.attr("id", "house-1");
   li.css("background-image", "url('" + background_image + "')");

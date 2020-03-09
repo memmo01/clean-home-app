@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Clean Home Landing Page</title>
-
-    <link rel="stylesheet" type="text/css" href="../css/style.css" />
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
     <script
       src="https://code.jquery.com/jquery-3.4.1.js"
       integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
@@ -14,7 +13,8 @@
     ></script>
     <script src="https://rawgit.com/moment/moment/2.2.1/min/moment.min.js"></script>
   </head>
-  <body>
+  <style></style>
+  <body id="individual-room">
     <header>
       <a href="#" class="header-brand">Clean House App</a>
       <nav>
@@ -27,7 +27,8 @@
     </header>
     <main>
       <!-- the name will change and load dynamically -->
-      <h1>Your Rooms</h1>
+      <h1 id="room-name"></h1>
+      <div class="banner"></div>
 
       <section class="house-group">
         <!-- location will load dynamically -->
@@ -35,7 +36,8 @@
       </section>
       <a class="home-btn" href="/">Home</a>
     </main>
+    <div class="detail-table"></div>
 
-    <script type="text/javascript" src="../js/javascript.js"></script>
+    <script type="text/javascript" src="/js/individualroom.js"></script>
   </body>
 </html>
