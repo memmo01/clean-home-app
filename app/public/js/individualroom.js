@@ -15,6 +15,8 @@ function constructClientView(data) {
 
 // display a check list of items to complete to make the room clean
 function displayCleanCheck() {
+  $("body").css("overflow", "hidden");
+
   let form = $("<form>");
   let modal = $(".modal-body");
 
@@ -22,7 +24,20 @@ function displayCleanCheck() {
     let inputdata = createCheckbox(roomdata[i]);
     form.append(inputdata);
   }
-
+  let noteButton = $("<img>", {
+    alt: "notepad",
+    src: "/icons/notepad.png",
+    class: "action-icon",
+    id: "edit-btn"
+  });
+  let cleanButton = $("<img>", {
+    alt: "notepad",
+    src: "/icons/clean.png",
+    class: "action-icon",
+    id: "clean-btn-submit"
+  });
+  form.append(noteButton);
+  form.append(cleanButton);
   modal.append(form);
 }
 
@@ -44,19 +59,6 @@ function createCheckbox(data) {
   return label;
 }
 
-function displayChore(chore) {
-  let row = $("<tr>");
-  let name = $("<td>");
-  let notes = $("<td>");
-
-  name.text(chore.chore_name);
-  notes.text(chore.notes);
-
-  row.append(name);
-  row.append(notes);
-  return row;
-}
-
 //create a clearing div function
 
 function clearDiv(div) {
@@ -71,6 +73,9 @@ $("#clean-btn").on("click", function(e) {
 
 $(".close").on("click", function(e) {
   e.preventDefault();
-  clearDiv("form");
+  $("body").css("overflow", "auto");
+
+  $("form").remove();
+
   $(".modal").css("display", "none");
 });

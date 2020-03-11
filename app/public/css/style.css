@@ -486,7 +486,7 @@ main h2 {
 }
 
 main .house-group ul li {
-  min-height: 200px;
+  min-height: 230px;
   text-align: center;
   width: 320px;
   margin: 30px auto;
@@ -498,11 +498,12 @@ main .house-group ul li {
   /* background-image: url("../images/JLIEE7006.JPG"); */
   background-size: cover;
   background-color: gray;
+  height: 215px;
 }
 
 .house-overlay {
   color: #fff;
-  min-height: 200px;
+  min-height: 215px;
   width: 300px;
   display: block;
   padding: 35px 10px 0px 10px;
@@ -614,9 +615,9 @@ th {
 .modal-content {
   margin: auto;
   padding: 20px;
-  height: 100vh;
+  min-height: 100%;
   background-color: white;
-  position: relative;
+  position: fixed;
   box-shadow: 3px 3px 13px rgba(0, 0, 0, 0.5);
 }
 
@@ -631,11 +632,28 @@ th {
   cursor: pointer;
 }
 
+#individual-room .action-icon {
+  position: fixed;
+  border: 2px solid black;
+  border-radius: 40px;
+  padding: 10px;
+  height: 42px;
+  bottom: 10px;
+}
+
+#clean-btn-submit {
+  left: 10px;
+  background: lightgreen;
+}
+#edit-btn {
+  right: 10px;
+}
+
 /* CUSTOM CHECKBOX CSS */
 
 /* The container */
 .container {
-  display: block;
+  display: flex;
   position: relative;
   padding-left: 55px;
   margin-bottom: 12px;
