@@ -617,7 +617,7 @@ th {
   padding: 20px;
   min-height: 100%;
   background-color: white;
-  position: fixed;
+  /* position: fixed; */
   box-shadow: 3px 3px 13px rgba(0, 0, 0, 0.5);
 }
 
@@ -641,11 +641,20 @@ th {
   bottom: 10px;
 }
 
-#clean-btn-submit {
+#clean-btn-submit,
+#cancel-btn {
   left: 10px;
+}
+#cancel-btn {
+  background-color: #ff6666;
+}
+
+#clean-btn-submit {
   background: lightgreen;
 }
-#edit-btn {
+#edit-btn,
+#edit-text-btn,
+#save-btn {
   right: 10px;
 }
 
