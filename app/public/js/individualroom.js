@@ -55,11 +55,47 @@ function displayCleanCheck(savecheck) {
   $(".modal-title").text("Cleaning Check List");
   form.append(noteButton);
   form.append(cleanButton);
+
   modal.append(form);
+  console.log(roomdata);
+  $(".modal-content").append(noteButton);
+
+  $("#clean-btn-submit").on("click", function(e) {
+    e.preventDefault();
+    let allcheck = true;
+    let formOptions = $("#myform")[0].elements;
+
+    for (let i = 0; i < formOptions.length; i++) {
+      if (formOptions[i].checked === false) {
+        allcheck = false;
+      }
+    }
+    if (allcheck === true) {
+      sendToDatabase();
+    }
+  });
+
+  function sendToDatabase() {
+    console.log(roomdata);
+    let now = moment().format("MM/DD/YY");
+    let trial = moment()
+      .add(5, "days")
+      .format("MM/DD/YY");
+    let data = {
+      last_cleaned: now,
+      room_id: roomdata[0].room_id,
+      notes: savenotes
+    };
+
+    $.post("/api/cleanedroom", data, function() {
+      console.log("posted");
+    });
+  }
 
   $("#edit-btn").on("click", function(e) {
     e.preventDefault();
     saveData();
+    clearDiv("#edit-btn");
     loadNoteTaker();
 
     //buttons for "cancel" and "save notes"
@@ -70,6 +106,7 @@ function displayCleanCheck(savecheck) {
       class: "action-icon",
       id: "cancel-btn"
     });
+
     let save = $("<img>", {
       alt: "notepad",
       src: "/icons/save2.png",
@@ -82,10 +119,14 @@ function displayCleanCheck(savecheck) {
 
     $("#cancel-btn").on("click", function(e) {
       e.preventDefault();
-      clearDiv(".btn-container");
-      clearDiv("#edit-text-btn");
-      clearDiv("textarea");
-      clearDiv(".complete-note-container");
+      clearDiv(
+        ".btn-container",
+        "#edit-text-btn",
+        "textarea",
+        ".complete-note-container",
+        "#save-btn"
+      );
+
       displayCleanCheck(true);
     });
 
@@ -121,8 +162,8 @@ function completeNotes() {
       id: "save-btn"
     });
 
-    clearDiv("#edit-text-btn");
-    clearDiv(".complete-note-container");
+    clearDiv("#edit-text-btn", ".complete-note-container");
+
     loadNoteTaker();
     $(".modal-content").append(save);
     $("#save-btn").on("click", function(e) {
@@ -184,9 +225,23 @@ function saveData() {
 
 //create a clearing div function
 
-function clearDiv(div) {
-  $("" + div + "").remove();
+function clearDiv(...div) {
+  for (let i = 0; i < div.length; i++) {
+    $("" + div[i] + "").remove();
+    console.log(div[i]);
+  }
 }
+
+$("#edit-room-btn").on("click", function(e) {
+  e.preventDefault();
+  /* 1. pull up modal
+      2. have input with value of room name (editable)
+      3.have chores list section ( this is where a list of current chores for that room will display. if an X is clicked next to it, it will delete it from the chores list.)
+      4. there will be an add chores button. (when click it will display a list of chores to choose from. The user can decide with chorse they want to add by selecting the checkbox next to the chore. If they click save, those chores will be added to the room to use. There will also be an add a chore to the list ability. (an input box and an add button. When add is clicked, it will join the rest of the list))
+      5. there will be a change duration option. (user can change number of days before the room needs to be cleaned)
+      6. in future will have ability to change image of room.
+   */
+});
 
 $("#clean-btn").on("click", function(e) {
   e.preventDefault();
@@ -197,11 +252,13 @@ $("#clean-btn").on("click", function(e) {
 $(".close").on("click", function(e) {
   e.preventDefault();
   $("body").css("overflow", "auto");
-  $("textarea").remove();
-  $("#edit-text-btn").remove();
-  $("form").remove();
-  $(".btn-container").remove();
-  $(".complete-note-container").remove();
+  clearDiv(
+    "textarea",
+    "#edit-tet-btn",
+    "form",
+    ".btn-container",
+    ".complete-note-container"
+  );
 
   $(".modal").css("display", "none");
 });

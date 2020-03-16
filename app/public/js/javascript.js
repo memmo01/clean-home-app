@@ -2,6 +2,7 @@
 // let something = "../images/living_room.jpg";
 $.get("/house/1", function(data) {})
   .done(function(data) {
+    console.log("house1");
     if (window.location.pathname === "/rooms") {
       constructData(data, false);
     } else {
@@ -37,9 +38,10 @@ function constructData(data, wholeHouse) {
 
 // gets the amount of time left to clean and turns it into a percentage
 function checkRoomStats(data, wholeHouse) {
+  console.log("made checkroomstats");
   let timeframe = parseInt(data.cleaning_time);
   let now = moment().format("MM/DD/YY");
-  let end = moment(data.end_date);
+  let end = moment(data.last_cleaned).add(timeframe, "days");
   let daysLeft = end.diff(now, "days");
   daysLeft = parseInt(daysLeft);
   let cleanName = urlPrep(data.room);
@@ -77,6 +79,8 @@ function createPercentage(daysLeft, cleaning_time) {
 // dynamically create display of house average data or individual room data
 function createHouseDisplay(data, percent, title, background_image, link) {
   let backgroundcolor = colorCheck(percent);
+  console.log("made createhousedisplay");
+  console.log(data);
 
   let li = $("<li>");
   let a = $("<a>");
