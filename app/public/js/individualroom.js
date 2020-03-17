@@ -1,7 +1,8 @@
-console.log(window.location.pathname);
 let path = window.location.pathname;
 let roomdata;
 let formsave = [];
+let taskToRemove = [];
+let chores = [];
 
 // when notes are created, it will be stored in save names variable
 let savenotes;
@@ -234,14 +235,88 @@ function clearDiv(...div) {
 
 $("#edit-room-btn").on("click", function(e) {
   e.preventDefault();
-  /* 1. pull up modal
-      2. have input with value of room name (editable)
-      3.have chores list section ( this is where a list of current chores for that room will display. if an X is clicked next to it, it will delete it from the chores list.)
-      4. there will be an add chores button. (when click it will display a list of chores to choose from. The user can decide with chorse they want to add by selecting the checkbox next to the chore. If they click save, those chores will be added to the room to use. There will also be an add a chore to the list ability. (an input box and an add button. When add is clicked, it will join the rest of the list))
-      5. there will be a change duration option. (user can change number of days before the room needs to be cleaned)
-      6. in future will have ability to change image of room.
-   */
+
+  $(".modal").css("display", "block");
+  $(".modal-title").text("Edit Room");
+
+  let form = $("<form>", { id: "roomEdit" });
+  let modal = $(".modal-body");
+
+  let roomNameEdit = $("<input>", {
+    value: roomdata[0].name,
+    class: "edit-input",
+    id: roomdata[0].name
+  });
+  let label = $("<label>", {
+    for: roomdata[0].name,
+    text: "Room Name"
+  });
+  label.append(roomNameEdit);
+  form.append(label);
+  modal.append(form);
+  let title = $("<h2>", { text: "Tasks to Complete" });
+
+  let daysOption = createOption();
+  let ul = createTaskList(roomdata);
+  let addTaskBtn = $("<div>", { class: "add-task", html: "Add More Tasks" });
+  let savebtn = $("<button>", { text: "save", id: "save-room-update" });
+
+  title.append(ul);
+  form.append(title);
+  form.append(addTaskBtn);
+  form.append(daysOption);
+  form.append(savebtn);
+
+  $(".remove-task").on("click", function(e) {
+    e.preventDefault();
+    taskToRemove.push(
+      $(this)
+        .closest("li")
+        .attr("data-name")
+
+      // will end up moving these to an array . when save is selected, it will take information in the array and delete it from database
+    );
+    $(this)
+      .closest("li")
+      .remove();
+    console.log(taskToRemove);
+  });
 });
+
+function createTaskList(data) {
+  let ul = $("<ul>", { class: "remove-list-conainer" });
+  for (let i = 0; i < roomdata.length; i++) {
+    let rmvBtn = $("<button>", { class: "remove-task", html: "&times" });
+    console.log("********");
+
+    // push chores to array to manage updates in app
+    chores.push(roomdata[i].chore_name);
+
+    let li = $("<li>", {
+      class: "remove-list",
+      "data-name": roomdata[i].chore_name
+    });
+    li.text(roomdata[i].chore_name);
+    li.prepend(rmvBtn);
+    ul.append(li);
+  }
+  return ul;
+}
+
+function createOption() {
+  let label = $("<label>", {
+    for: "days",
+    text: "Number of days before room needs to be cleaned again",
+    id: "days-label"
+  });
+  let select = $("<select>", { id: "days" });
+  for (let i = 1; i <= 30; i++) {
+    let option = $("<option>", { value: i, text: i });
+    select.append(option);
+  }
+  label.append(select);
+  return label;
+}
 
 $("#clean-btn").on("click", function(e) {
   e.preventDefault();
@@ -257,7 +332,8 @@ $(".close").on("click", function(e) {
     "#edit-tet-btn",
     "form",
     ".btn-container",
-    ".complete-note-container"
+    ".complete-note-container",
+    "#edit-btn"
   );
 
   $(".modal").css("display", "none");

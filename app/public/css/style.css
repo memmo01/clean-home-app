@@ -584,6 +584,15 @@ th {
 #individual-room label {
   font-size: 30px;
 }
+#individual-room #days-label,
+#individual-room select {
+  display: block !important;
+}
+#days-label {
+  padding: 5px;
+  margin: 40px auto 0px;
+  text-align: center;
+}
 #individual-room .modal-content {
   padding: 20px auto;
 }
@@ -596,6 +605,10 @@ th {
 #individual-room .modal-title {
   font-size: 45px;
   text-align: center;
+}
+#days {
+  margin: 30px auto;
+  padding: 5px;
 }
 
 .modal {
@@ -632,6 +645,34 @@ th {
   cursor: pointer;
 }
 
+.remove-task {
+  border-radius: 8px !important;
+  border: 0 !important;
+  color: white;
+  background-color: red;
+  margin-right: 20px;
+  font-size: 16px;
+}
+.add-task {
+  text-align: center;
+  color: white;
+  background-color: green;
+  width: fit-content;
+  padding: 5px 15px;
+  margin: 15px auto;
+}
+.remove-list-conainer {
+  width: 60%;
+  margin: auto;
+}
+.remove-list {
+  font-size: 25px;
+}
+#save-room-update {
+  margin: auto;
+  display: block;
+}
+
 #individual-room .action-icon {
   position: fixed;
   border: 2px solid black;
@@ -656,6 +697,12 @@ th {
 #edit-text-btn,
 #save-btn {
   right: 10px;
+}
+.circle-try:before {
+  content: url("../images/cancel-circle.png");
+}
+.edit-input {
+  width: 100%;
 }
 
 /* CUSTOM CHECKBOX CSS */
