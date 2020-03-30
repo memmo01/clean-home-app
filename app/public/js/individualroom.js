@@ -2,7 +2,11 @@ let path = window.location.pathname;
 let roomdata;
 let formsave = [];
 let taskToRemove = [];
+let newchores = [];
 let chores = [];
+
+// create save array
+//when done adding tasks
 
 // when notes are created, it will be stored in save names variable
 let savenotes;
@@ -12,9 +16,12 @@ function savedInput(check, name) {
   this.chore_name = name;
 }
 
+console.log(path);
+
 $.get("/api" + path, function(data) {}).done(function(data) {
   //save data for future use on page
   roomdata = data;
+  console.log(data);
   constructClientView(data);
 });
 
@@ -256,12 +263,23 @@ $("#edit-room-btn").on("click", function(e) {
   modal.append(form);
   let title = $("<h2>", { text: "Tasks to Complete" });
 
-  let daysOption = createOption();
-  let ul = createTaskList(roomdata);
-  let addTaskBtn = $("<div>", { class: "add-task", html: "Add More Tasks" });
+  // add chores to array
+  for (let i = 0; i < roomdata.length; i++) {
+    chores.push(roomdata[i].chore_name);
+  }
+
+  //create <select> cleaning_days option list for form
+  let daysOption = createOption(roomdata[0].cleaning_timeframe);
+
+  let ul = createTaskList();
+  let taskInput = $("<input>", { id: "add-task", placeholder: "Add Task" });
+  let addTaskBtn = $("<div>", { class: "add-task" });
+  let addbtn = $("<img>", { src: "/icons/plus-bare.png", id: "add-task-btn" });
   let savebtn = $("<button>", { text: "save", id: "save-room-update" });
 
   title.append(ul);
+  addTaskBtn.prepend(taskInput);
+  addTaskBtn.append(addbtn);
   form.append(title);
   form.append(addTaskBtn);
   form.append(daysOption);
@@ -269,41 +287,90 @@ $("#edit-room-btn").on("click", function(e) {
 
   $(".remove-task").on("click", function(e) {
     e.preventDefault();
-    taskToRemove.push(
-      $(this)
-        .closest("li")
-        .attr("data-name")
+    runRemove(this);
+    console.log(chores);
+  });
 
-      // will end up moving these to an array . when save is selected, it will take information in the array and delete it from database
-    );
-    $(this)
-      .closest("li")
-      .remove();
-    console.log(taskToRemove);
+  $("#add-task-btn").on("click", function(e) {
+    e.preventDefault();
+    let inputValue = $("#add-task")
+      .val()
+      .trim();
+    $("#add-task").val("");
+
+    if (inputValue.length === 0) {
+      alert("please enter a task");
+    } else {
+      newchores.push(inputValue);
+      chores.push(inputValue);
+
+      let rmvBtn = $("<button>", { class: "remove-task", html: "&times" });
+      let ul = $(".remove-list-conainer");
+      let li = $("<li>", {
+        class: "remove-list",
+        "data-name": inputValue
+      });
+      li.text(inputValue);
+      li.prepend(rmvBtn);
+      ul.append(li);
+    }
+
+    $(".remove-task").on("click", function(e) {
+      e.preventDefault();
+      runRemove(this);
+      console.log(chores);
+    });
+  });
+  $("#save-room-update").on("click", function(e) {
+    e.preventDefault();
+    let roomName = $(".edit-input")
+      .val()
+      .trim();
+    let days = $("#days")
+      .val()
+      .trim();
+    let roomEditInfo = {
+      newchores: newchores,
+      room_id: roomdata[0].room_id,
+      removechores: taskToRemove,
+      name: roomName,
+      cleaning_timeframe: days
+    };
+    updateDatabase(roomEditInfo);
   });
 });
 
-function createTaskList(data) {
+function runRemove(thisElement) {
+  let task = $(thisElement)
+    .closest("li")
+    .attr("data-name");
+  $(thisElement)
+    .closest("li")
+    .remove();
+  // find chore to remove in the chore array and remove it
+  taskToRemove.push(task);
+  let choreIndex = chores.indexOf(task);
+  if (choreIndex > -1) {
+    chores.splice(choreIndex, 1);
+  }
+}
+function createTaskList() {
   let ul = $("<ul>", { class: "remove-list-conainer" });
-  for (let i = 0; i < roomdata.length; i++) {
+  for (let i = 0; i < chores.length; i++) {
     let rmvBtn = $("<button>", { class: "remove-task", html: "&times" });
-    console.log("********");
-
-    // push chores to array to manage updates in app
-    chores.push(roomdata[i].chore_name);
 
     let li = $("<li>", {
       class: "remove-list",
-      "data-name": roomdata[i].chore_name
+      "data-name": chores[i]
     });
-    li.text(roomdata[i].chore_name);
+    li.text(chores[i]);
     li.prepend(rmvBtn);
     ul.append(li);
   }
   return ul;
 }
 
-function createOption() {
+function createOption(data) {
   let label = $("<label>", {
     for: "days",
     text: "Number of days before room needs to be cleaned again",
@@ -311,11 +378,33 @@ function createOption() {
   });
   let select = $("<select>", { id: "days" });
   for (let i = 1; i <= 30; i++) {
-    let option = $("<option>", { value: i, text: i });
+    let option;
+    if (data === i) {
+      option = $("<option>", { value: i, text: i, selected: "selected" });
+    } else {
+      option = $("<option>", { value: i, text: i });
+    }
     select.append(option);
   }
+
   label.append(select);
   return label;
+}
+
+function updateDatabase(addchoredata) {
+  $.post("/api/addchore", addchoredata, function() {
+    console.log("sent");
+  });
+
+  // if (removechoredata.removechores.length > 0) {
+  //   $.post("/api/removechore", removechoredata, function() {
+  //     console.log("sent remove");
+  //   });
+  // }
+
+  // $.post("/api/updateroom", updateroom, function() {
+  //   console.log("sent room update");
+  // });
 }
 
 $("#clean-btn").on("click", function(e) {
@@ -326,6 +415,7 @@ $("#clean-btn").on("click", function(e) {
 
 $(".close").on("click", function(e) {
   e.preventDefault();
+  chores = [];
   $("body").css("overflow", "auto");
   clearDiv(
     "textarea",

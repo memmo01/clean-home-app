@@ -655,11 +655,20 @@ th {
 }
 .add-task {
   text-align: center;
-  color: white;
-  background-color: green;
+  color: black;
   width: fit-content;
   padding: 5px 15px;
   margin: 15px auto;
+}
+
+#add-task-btn {
+  position: relative;
+  top: -2px;
+  height: 25px;
+  border: 2px solid black;
+  border-radius: 25px;
+  left: 10px;
+  background-color: lightgreen;
 }
 .remove-list-conainer {
   width: 60%;

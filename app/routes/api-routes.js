@@ -14,7 +14,7 @@ module.exports = function(app) {
 
   app.get("/api/rooms/:roomName/:roomId", function(req, res) {
     let individualRoomData =
-      "SELECT chore_db.chore_name, chore_db.date_cleaned,chore_db.room_id,rooms_db.cleaning_timeframe, rooms_db.name, rooms_db.img FROM chore_db JOIN rooms_db ON rooms_db.id =" +
+      "SELECT chore_db.chore_name,chore_db.room_id,rooms_db.cleaning_timeframe, rooms_db.name, rooms_db.img FROM chore_db JOIN rooms_db ON rooms_db.id =" +
       req.params.roomId +
       " AND chore_db.room_id =" +
       req.params.roomId +
@@ -47,5 +47,45 @@ module.exports = function(app) {
         res.end();
       }
     );
+  });
+
+  app.post("/api/addchore", function(req, res) {
+    console.log(req.body);
+    let addchores = "INSERT INTO chore_db (chore_name, room_id) VALUES (?,?)";
+
+    let removechores =
+      "DELETE FROM chore_db WHERE chore_name = ? AND room_id = ?";
+
+    let updateroom =
+      "UPDATE rooms_db SET name = ? , cleaning_timeframe = ? WHERE id = ?";
+
+    if (req.body.newchores)
+      for (let i = 0; i < req.body.newchores.length; i++) {
+        connection.query(addchores, [req.body.newchores[i], req.body.room_id]);
+      }
+
+    if (req.body.removechores) {
+      for (let i = 0; i < req.body.removechores.length; i++) {
+        connection.query(removechores, [
+          req.body.removechores[i],
+          req.body.room_id
+        ]);
+      }
+    }
+    connection.query(updateroom, [
+      req.body.name,
+      req.body.cleaning_timeframe,
+      req.body.room_id
+    ]);
+    // connection.query(addchores, [req.body.new_chore]);
+
+    // connection.query(
+    //   CleanRoomData,
+    //   [req.body.last_cleaned, req.body.room_id, req.body.notes],
+    //   function(err, result) {
+    //     console.log("saved successfully");
+
+    //     res.end();
+    //   }
   });
 };
