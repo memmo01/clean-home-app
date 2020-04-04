@@ -1,9 +1,22 @@
 // get house data when loading page
 // let something = "../images/living_room.jpg";
-$.get("/house/1", function(data) {})
+let urlpath = window.location.pathname;
+let urlarray = urlpath.split("/");
+let defaultimage = "../images/living_room.jpg";
+let house;
+// this when I add user login ability it will grab a unique number from the url to reference the house. For now I have it designated to house id 1.
+if (urlpath === "/") {
+  house = 1;
+} else {
+  house = urlarray[urlarray.length - 1];
+  console.log(house);
+}
+$.get("/house/" + house + "", function(data) {})
   .done(function(data) {
-    console.log("house1");
-    if (window.location.pathname === "/rooms") {
+    console.log(urlarray);
+    let roompath = urlarray[urlarray.length - 2];
+    console.log(roompath);
+    if (roompath === "rooms") {
       constructData(data, false);
     } else {
       constructData(data, true);
@@ -31,7 +44,7 @@ function constructData(data, wholeHouse) {
       average,
       data[0].location,
       data[0].image,
-      "/rooms"
+      "/rooms/" + house
     );
   }
 }
@@ -78,6 +91,9 @@ function createPercentage(daysLeft, cleaning_time) {
 
 // dynamically create display of house average data or individual room data
 function createHouseDisplay(data, percent, title, background_image, link) {
+  if (background_image === null) {
+    background_image = defaultimage;
+  }
   let backgroundcolor = colorCheck(percent);
   console.log("made createhousedisplay");
   console.log(data);

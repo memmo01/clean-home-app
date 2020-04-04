@@ -1,4 +1,5 @@
 let path = window.location.pathname;
+let splitpath = path.split("/");
 let roomdata;
 let formsave = [];
 let taskToRemove = [];
@@ -15,20 +16,27 @@ function savedInput(check, name) {
   this.checked = check;
   this.chore_name = name;
 }
-
-console.log(path);
-
-$.get("/api" + path, function(data) {}).done(function(data) {
-  //save data for future use on page
-  roomdata = data;
-  console.log(data);
-  constructClientView(data);
-});
+if (splitpath[splitpath.length - 2] !== "rooms") {
+  $.get("/api" + path, function(data) {}).done(function(data) {
+    //save data for future use on page
+    roomdata = data;
+    console.log(data);
+    console.log("try it here");
+    constructClientView(data);
+  });
+}
 
 function constructClientView(data) {
   $("#room-name").text(data[0].name);
-  let imgg = data[0].img.split("..");
-  $(".banner").css("background-image", "url('" + imgg[1] + "')");
+  let imgg;
+  if (data[0].img === null) {
+    imgg = "/images/living_room.jpg";
+  } else {
+    let img = data[0].img.split("..");
+    imgg = img[1];
+  }
+
+  $(".banner").css("background-image", "url('" + imgg + "')");
 }
 
 // display a check list of items to complete to make the room clean
@@ -80,6 +88,8 @@ function displayCleanCheck(savecheck) {
     }
     if (allcheck === true) {
       sendToDatabase();
+    } else {
+      alert("You have not completed all tasks yet!");
     }
   });
 
@@ -97,6 +107,9 @@ function displayCleanCheck(savecheck) {
 
     $.post("/api/cleanedroom", data, function() {
       console.log("posted");
+    }).then(function() {
+      alert("Room is cleaned!");
+      window.location.href = "/rooms/" + roomdata[0].house_id + "";
     });
   }
 
@@ -243,33 +256,164 @@ function clearDiv(...div) {
 $("#edit-room-btn").on("click", function(e) {
   e.preventDefault();
 
-  $(".modal").css("display", "block");
-  $(".modal-title").text("Edit Room");
+  console.log(path);
+  populateRoomEdit(false);
+});
 
+function runRemove(thisElement) {
+  let task = $(thisElement)
+    .closest("li")
+    .attr("data-name");
+  $(thisElement)
+    .closest("li")
+    .remove();
+  // find chore to remove in the chore array and remove it
+  taskToRemove.push(task);
+  let choreIndex = chores.indexOf(task);
+  if (choreIndex > -1) {
+    chores.splice(choreIndex, 1);
+  }
+}
+function createTaskList() {
+  let ul = $("<ul>", { class: "remove-list-conainer" });
+  for (let i = 0; i < chores.length; i++) {
+    let rmvBtn = $("<img>", {
+      class: "remove-task",
+      src: "/icons/minus-bare.png"
+    });
+
+    let li = $("<li>", {
+      class: "remove-list",
+      "data-name": chores[i]
+    });
+    li.text(chores[i]);
+    li.prepend(rmvBtn);
+    ul.append(li);
+  }
+  return ul;
+}
+
+$("#delete-btn").on("click", function(e) {
+  e.preventDefault();
+  let confirmation = confirm("Are you sure you want to delete this room?");
+  let room = { roomid: splitpath[splitpath.length - 1] };
+  if (confirmation === true) {
+    $.post("/delete/room", room, function() {
+      console.log("deleted");
+    });
+    alert("room " + roomdata[0].name + " has been deleted");
+    window.location.href = "/rooms/" + roomdata[0].house_id + "";
+  }
+});
+
+function createOption(data) {
+  let label = $("<label>", {
+    for: "days",
+    text: "Number of days before room needs to be cleaned again",
+    id: "days-label"
+  });
+  let select = $("<select>", { id: "days" });
+  for (let i = 1; i <= 30; i++) {
+    let option;
+    if (data === i) {
+      option = $("<option>", { value: i, text: i, selected: "selected" });
+    } else {
+      option = $("<option>", { value: i, text: i });
+    }
+    select.append(option);
+  }
+
+  label.append(select);
+  return label;
+}
+
+function pullnewInfo() {
+  $.get("/api" + path, function(data) {}).done(function(data) {
+    //save data for future use on page
+    roomdata = data;
+  });
+}
+function updateDatabase(addchoredata, newroom) {
+  console.log(addchoredata);
+  console.log(newroom);
+  console.log("made it to update database");
+  if (newroom === "addroom") {
+    let now = moment().format("MM/DD/YY");
+    let houseId = splitpath[splitpath.length - 1];
+    addchoredata.last_cleaned = now;
+    addchoredata.house_id = houseId;
+    $.post("/api/newroom", addchoredata, function(data) {
+      console.log("sent");
+    }).then(function() {
+      $.get("/");
+    });
+  } else {
+    console.log("MUAHAHAAHHAHA");
+    console.log(addchoredata);
+    $.post("/api/addchore", addchoredata, function() {
+      console.log("sent");
+    });
+  }
+}
+
+$("#clean-btn").on("click", function(e) {
+  e.preventDefault();
+  $(".modal").css("display", "block");
+  displayCleanCheck(false);
+});
+
+$(".close").on("click", function(e) {
+  e.preventDefault();
+  chores = [];
+  $("body").css("overflow", "auto");
+  clearDiv(
+    "textarea",
+    "#edit-tet-btn",
+    "form",
+    ".btn-container",
+    ".complete-note-container",
+    "#edit-btn"
+  );
+
+  $(".modal").css("display", "none");
+});
+function populateRoomEdit(newroom) {
+  let roomthing = "";
+  let daystoclean = 5;
+  let formTitle;
+  if (newroom) {
+    formTitle = "Add Room";
+  } else {
+    formTitle = "Edit Room";
+    roomthing = roomdata[0].name;
+    daystoclean = roomdata[0].cleaning_timeframe;
+    // add chores to array
+    for (let i = 0; i < roomdata.length; i++) {
+      chores.push(roomdata[i].chore_name);
+    }
+  }
+  $(".modal").css("display", "block");
+  $(".modal-title").text(formTitle);
   let form = $("<form>", { id: "roomEdit" });
   let modal = $(".modal-body");
 
   let roomNameEdit = $("<input>", {
-    value: roomdata[0].name,
+    value: roomthing,
     class: "edit-input",
-    id: roomdata[0].name
+    id: roomthing
   });
   let label = $("<label>", {
-    for: roomdata[0].name,
+    for: roomthing,
     text: "Room Name"
   });
   label.append(roomNameEdit);
   form.append(label);
   modal.append(form);
+  let div = $("<div>");
   let title = $("<h2>", { text: "Tasks to Complete" });
 
-  // add chores to array
-  for (let i = 0; i < roomdata.length; i++) {
-    chores.push(roomdata[i].chore_name);
-  }
-
   //create <select> cleaning_days option list for form
-  let daysOption = createOption(roomdata[0].cleaning_timeframe);
+  let daysOption = createOption(daystoclean);
 
   let ul = createTaskList();
   let taskInput = $("<input>", { id: "add-task", placeholder: "Add Task" });
@@ -277,10 +421,11 @@ $("#edit-room-btn").on("click", function(e) {
   let addbtn = $("<img>", { src: "/icons/plus-bare.png", id: "add-task-btn" });
   let savebtn = $("<button>", { text: "save", id: "save-room-update" });
 
-  title.append(ul);
+  div.append(title);
+  div.append(ul);
   addTaskBtn.prepend(taskInput);
   addTaskBtn.append(addbtn);
-  form.append(title);
+  form.append(div);
   form.append(addTaskBtn);
   form.append(daysOption);
   form.append(savebtn);
@@ -304,7 +449,10 @@ $("#edit-room-btn").on("click", function(e) {
       newchores.push(inputValue);
       chores.push(inputValue);
 
-      let rmvBtn = $("<button>", { class: "remove-task", html: "&times" });
+      let rmvBtn = $("<img>", {
+        class: "remove-task",
+        src: "/icons/minus-bare.png"
+      });
       let ul = $(".remove-list-conainer");
       let li = $("<li>", {
         class: "remove-list",
@@ -323,6 +471,20 @@ $("#edit-room-btn").on("click", function(e) {
   });
   $("#save-room-update").on("click", function(e) {
     e.preventDefault();
+    let urlpath = window.location.pathname;
+    let urlarray = urlpath.split("/");
+    let adddata = urlarray[urlarray.length - 2];
+    let typeofupdate = "updateroom";
+    let roomid = "";
+    let pullinfo = true;
+    if (adddata === "rooms") {
+      typeofupdate = "addroom";
+      pullinfo = false;
+      roomid = "";
+    } else {
+      roomid = urlarray[urlarray.length - 1];
+    }
+
     let roomName = $(".edit-input")
       .val()
       .trim();
@@ -331,100 +493,23 @@ $("#edit-room-btn").on("click", function(e) {
       .trim();
     let roomEditInfo = {
       newchores: newchores,
-      room_id: roomdata[0].room_id,
+      room_id: roomid,
       removechores: taskToRemove,
       name: roomName,
       cleaning_timeframe: days
     };
-    updateDatabase(roomEditInfo);
-  });
-});
-
-function runRemove(thisElement) {
-  let task = $(thisElement)
-    .closest("li")
-    .attr("data-name");
-  $(thisElement)
-    .closest("li")
-    .remove();
-  // find chore to remove in the chore array and remove it
-  taskToRemove.push(task);
-  let choreIndex = chores.indexOf(task);
-  if (choreIndex > -1) {
-    chores.splice(choreIndex, 1);
-  }
-}
-function createTaskList() {
-  let ul = $("<ul>", { class: "remove-list-conainer" });
-  for (let i = 0; i < chores.length; i++) {
-    let rmvBtn = $("<button>", { class: "remove-task", html: "&times" });
-
-    let li = $("<li>", {
-      class: "remove-list",
-      "data-name": chores[i]
-    });
-    li.text(chores[i]);
-    li.prepend(rmvBtn);
-    ul.append(li);
-  }
-  return ul;
-}
-
-function createOption(data) {
-  let label = $("<label>", {
-    for: "days",
-    text: "Number of days before room needs to be cleaned again",
-    id: "days-label"
-  });
-  let select = $("<select>", { id: "days" });
-  for (let i = 1; i <= 30; i++) {
-    let option;
-    if (data === i) {
-      option = $("<option>", { value: i, text: i, selected: "selected" });
+    updateDatabase(roomEditInfo, typeofupdate);
+    if (pullinfo) {
+      pullnewInfo();
+      alert("Room has been updated");
     } else {
-      option = $("<option>", { value: i, text: i });
+      alert("New room had been added");
     }
-    select.append(option);
-  }
 
-  label.append(select);
-  return label;
-}
-
-function updateDatabase(addchoredata) {
-  $.post("/api/addchore", addchoredata, function() {
-    console.log("sent");
+    window.location.reload();
   });
-
-  // if (removechoredata.removechores.length > 0) {
-  //   $.post("/api/removechore", removechoredata, function() {
-  //     console.log("sent remove");
-  //   });
-  // }
-
-  // $.post("/api/updateroom", updateroom, function() {
-  //   console.log("sent room update");
-  // });
 }
-
-$("#clean-btn").on("click", function(e) {
+$("#addingroom").on("click", function(e) {
   e.preventDefault();
-  $(".modal").css("display", "block");
-  displayCleanCheck(false);
-});
-
-$(".close").on("click", function(e) {
-  e.preventDefault();
-  chores = [];
-  $("body").css("overflow", "auto");
-  clearDiv(
-    "textarea",
-    "#edit-tet-btn",
-    "form",
-    ".btn-container",
-    ".complete-note-container",
-    "#edit-btn"
-  );
-
-  $(".modal").css("display", "none");
+  populateRoomEdit(true);
 });
