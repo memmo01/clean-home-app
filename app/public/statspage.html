@@ -10,12 +10,10 @@
   <link rel="stylesheet" type="text/css" href="/css/style.css" />
   <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
     crossorigin="anonymous"></script>
-
   <script src="https://rawgit.com/moment/moment/2.2.1/min/moment.min.js"></script>
 </head>
-<style></style>
 
-<body id="individual-room">
+<body id="room-list">
   <div class="modal">
     <div class="modal-content" style="overflow-y:scroll!important;">
       <span class="close">&times;</span>
@@ -23,7 +21,6 @@
       <div class="modal-body"></div>
     </div>
   </div>
-
   <header>
     <a href="#" class="header-brand">Clean House App</a>
     <nav>
@@ -34,30 +31,19 @@
       </ul>
     </nav>
   </header>
-
-  <main id="individual-main">
+  <main>
     <!-- the name will change and load dynamically -->
-    <h1 id="room-name"></h1>
-    <div class="banner"></div>
+    <h1 id="stats-title"></h1>
 
     <section class="house-group">
-      <!-- location will load dynamically -->
-      <ul class="room-list"></ul>
-    </section>
-    <div class="stats-area"></div>
-    <div class="circle">
-    </div>
-    <div class="room-action-container">
-      <a class="rm-action-btn" id="clean-btn" href="">Room Cleaned</a>
-      <a class="rm-action-btn" id="edit-room-btn" href="">Edit</a>
-      <a class="rm-action-btn" id="delete-btn">Delete</a>
-    </div>
-    <a class="home-btn" href="/">Home</a>
-    <a class="home-btn" href="/rooms/1">Back to Rooms</a>
-  </main>
-  <div class="detail-table"></div>
 
-  <script type="text/javascript" src="/js/individualroom.js"></script>
+
+
+  </main>
+
+  <a class="home-btn" id="indiv-back-btn">Back</a>
+
+  <script type="text/javascript" src="../js/individualroom.js"></script>
 </body>
 
 </html>

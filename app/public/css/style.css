@@ -557,6 +557,45 @@ main .house-group ul li {
   cursor: pointer;
 }
 
+.room-action-container{
+display: flex;
+    flex-flow: nowrap;
+    height: 100%;
+}
+.rm-action-btn{
+    padding: 12px 0px;
+    height: 50px;
+    width: 182px;
+    text-align: center;
+    border: 2px solid rgba(0, 0, 0, 0.4);
+    border-radius: 10%;
+    font-size: 20px;
+    display: grid;
+    align-items: center;
+    margin: 5px 5px;
+}
+.arrow-down {
+  width: 0; 
+  height: 0; 
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid black;
+  margin: 10px auto 0px;
+}
+
+
+.arrow-up {
+  width: 0; 
+  height: 0; 
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid black;
+  margin: 10px auto 0px;
+}
+.rm-action-btn:visited{
+  color:black;
+}
+
 /* individual room page */
 
 #individual-room .banner {
@@ -631,6 +670,23 @@ th {
 #days {
   margin: 30px auto;
   padding: 5px;
+}
+
+.statslink{
+  display: block;
+  padding: 5px 10px;
+  color: black;
+  border: 1px solid black;
+  width: fit-content;
+  margin: 20px auto;
+}
+#stats-title{
+  text-align:center;
+  padding:0 0 20px 0 ;
+}
+#indiv-back-btn{
+  width: 100px;
+    margin: auto;
 }
 
 .modal {

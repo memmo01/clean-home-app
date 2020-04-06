@@ -34,13 +34,29 @@ module.exports = function (app) {
   app.get("/api/roomnotes/:id/:date", function (req, res) {
 
     let roomnotes = "SELECT * FROM room_cleaned WHERE room_id =? AND date_cleaned =?";
+    let allroomnotes = "SELECT * FROM room_cleaned WHERE room_id = ?"
     let y = req.params.date.split(".")
     let t = y.join("/")
+
+
 
     connection.query(roomnotes, [req.params.id, t], function (err, results) {
 
       res.json(results)
     })
+
+
+  })
+
+  app.get("/api/roomnotes/:id", function (req, res) {
+
+
+    let allroomnotes = "SELECT room_cleaned.date_cleaned, room_cleaned.notes, room_cleaned.id, room_cleaned.room_id, rooms_db.name FROM room_cleaned JOIN rooms_db ON rooms_db.id=" + req.params.id + " AND room_cleaned.room_id =" + req.params.id + " ORDER BY room_cleaned.date_cleaned DESC";
+    connection.query(allroomnotes, function (err, results) {
+
+      res.json(results)
+    })
+
   })
 
 

@@ -17,13 +17,18 @@ function savedInput(check, name) {
   this.checked = check;
   this.chore_name = name;
 }
-if (splitpath[splitpath.length - 2] !== "rooms") {
+if (splitpath[splitpath.length - 2] !== "rooms" && splitpath[splitpath.length - 2] !== "roomstats") {
   $.get("/api" + path, function (data) { }).done(function (data) {
     //save data for future use on page
     roomdata = data;
     constructClientView(data);
   });
 }
+else if (splitpath[splitpath.length - 2] === "roomstats") {
+  let roomid = splitpath[splitpath.length - 1]
+  getroomstats(roomid)
+}
+
 
 function constructClientView(data) {
   $("#room-name").text(data[0].name);
@@ -45,8 +50,15 @@ function constructClientView(data) {
 
 
   }).then(function (data) {
-    let the = accordionCreation(data)
-    $(".stats-area").replaceWith(the)
+    let recentactivity = accordionCreation(data[0], "Recent Activity")
+
+    let statslink = $("<a>", {
+      text: "View All Activity",
+      href: "/roomstats/" + data[0].room_id,
+      class: "statslink"
+    })
+    $(".stats-area").replaceWith(recentactivity)
+    $(".accordian-body").append(statslink)
     $(".accordian-title").on("click", function (e) {
       e.preventDefault()
       accordionClick(this)
@@ -536,14 +548,16 @@ $("#addingroom").on("click", function (e) {
 
 
 
-function accordionCreation(data) {
+function accordionCreation(data, newtitle) {
 
   let notes = "no notes listed"
-  let title = "Recent Activity"
+  let title = newtitle
 
   let div = $("<div>")
   let accordiantitlediv = $("<div>", { class: "accordian-title" })
   let accordiantitleh2 = $("<h2>", { text: title })
+  let arrow = $("<div>", { class: "arrow-down" })
+  accordiantitleh2.append(arrow)
 
   accordiantitlediv.append(accordiantitleh2)
   div.append(accordiantitlediv)
@@ -553,11 +567,11 @@ function accordionCreation(data) {
 
   let table = $("<table>")
   let last_cleanedhead = $("<th>", { text: "Last Cleaned" })
-  let last_cleaneddata = $("<td>", { text: data[0].date_cleaned })
+  let last_cleaneddata = $("<td>", { text: data.date_cleaned })
 
   let notesth = $("<th>", { text: "Cleaning Notes" })
-  if (data[0].notes) {
-    notes = data[0].notes
+  if (data.notes) {
+    notes = data.notes
   }
   let notetd = $("<td>", { text: notes })
 
@@ -570,18 +584,33 @@ function accordionCreation(data) {
     table.append(row)
 
   }
-
-
-
-
-
-
   accordianbody.append(table)
   div.append(accordianbody)
   return div
 
 
 
+}
+
+// populate room stats page
+function getroomstats(roomid) {
+  console.log(roomdata)
+  $.get("/api/roomnotes/" + roomid, function (data) {
+    console.log(data)
+    console.log(roomdata)
+    $("#indiv-back-btn").attr("href", "/rooms/" + data[0].name + "/" + data[0].room_id)
+    $("#stats-title").text(data[0].name + " Stats ")
+    for (let i = 0; i < data.length; i++) {
+      let x = accordionCreation(data[i], data[i].date_cleaned)
+      $(".house-group").append(x)
+    }
+
+  }).then(function () {
+    $(".accordian-title").on("click", function (e) {
+      e.preventDefault()
+      accordionClick(this)
+    })
+  })
 }
 
 
@@ -593,10 +622,25 @@ function accordionClick(data) {
     if ($(accordbody).data("collapsed") === true) {
       bodyHeight = accordbody.scrollHeight
       $(accordbody).css("height", bodyHeight + "px")
+      updateArrow(data, "down")
       $(accordbody).data("collapsed", false)
     } else if ($(accordbody).data("collapsed") === false) {
       $(accordbody).css("height", "0px")
+      updateArrow(data, "up")
       $(accordbody).data("collapsed", true)
     }
+  }
+}
+function updateArrow(data, direction) {
+  if (direction === "up") {
+    console.log(data)
+    let y = $(data).find('.arrow-up')
+    $(y).addClass("arrow-down")
+    $(y).removeClass("arrow-up")
+  }
+  else if (direction === "down") {
+    let y = $(data).find('.arrow-down')
+    $(y).addClass("arrow-up")
+    $(y).removeClass("arrow-down")
   }
 }
