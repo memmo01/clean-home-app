@@ -1,43 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Clean Home Landing Page</title>
-    <link rel="stylesheet" type="text/css" href="../css/style.css" />
-    <script
-      src="https://code.jquery.com/jquery-3.4.1.js"
-      integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
-      crossorigin="anonymous"
-    ></script>
-    <script src="https://rawgit.com/moment/moment/2.2.1/min/moment.min.js"></script>
-  </head>
-  <body>
-    <header>
-      <a href="#" class="header-brand">Clean House App</a>
-      <nav>
-        <ul>
-          <li>Add House</li>
-          <li>Edit House</li>
-          <li>About App</li>
-        </ul>
-      </nav>
-    </header>
-    <main>
-      <!-- the name will change and load dynamically -->
-      <h1>Hi Mike!</h1>
 
-      <!-- this part will load dynamically with different messages -->
-      <p>it looks like the house is clean!</p>
-      <!-- the name will change and load dynamically -->
-      <!-- <h1>Your Property</h1> -->
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Clean Home Landing Page</title>
+  <link rel="stylesheet" type="text/css" href="../css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Gotu&display=swap" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+    crossorigin="anonymous"></script>
+  <script src="https://rawgit.com/moment/moment/2.2.1/min/moment.min.js"></script>
+</head>
 
-      <section class="house-group">
-        <!-- location will load dynamically -->
-        <ul class="room-list"></ul>
-      </section>
-    </main>
-    <script type="text/javascript" src="./js/javascript.js"></script>
-  </body>
+<body>
+  <header>
+    <a href="/" class="header-brand">Clean House App</a>
+    <nav>
+      <ul>
+        <li>Add House</li>
+        <li>Edit House</li>
+        <li>About App</li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <!-- the name will change and load dynamically -->
+    <h1>Hi Mike!</h1>
+
+    <!-- this part will load dynamically with different messages -->
+    <p id="homeMessage">it looks like the house is clean!</p>
+    <!-- the name will change and load dynamically -->
+    <!-- <h1>Your Property</h1> -->
+
+    <section class="house-group">
+      <!-- location will load dynamically -->
+      <ul class="room-list"></ul>
+    </section>
+  </main>
+  <script type="text/javascript" src="./js/javascript.js"></script>
+</body>
+
 </html>

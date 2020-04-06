@@ -1,50 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Clean Home Landing Page</title>
 
-    <link rel="stylesheet" type="text/css" href="/css/style.css" />
-    <script
-      src="https://code.jquery.com/jquery-3.4.1.js"
-      integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
-      crossorigin="anonymous"
-    ></script>
-    <script src="https://rawgit.com/moment/moment/2.2.1/min/moment.min.js"></script>
-  </head>
-  <body id="room-list">
-    <div class="modal">
-      <div class="modal-content" style="overflow-y:scroll!important;">
-        <span class="close">&times;</span>
-        <h2 class="modal-title"></h2>
-        <div class="modal-body"></div>
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Clean Home Landing Page</title>
+
+  <link rel="stylesheet" type="text/css" href="/css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Gotu&display=swap" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+    crossorigin="anonymous"></script>
+  <script src="https://rawgit.com/moment/moment/2.2.1/min/moment.min.js"></script>
+</head>
+
+<body id="room-list">
+  <div class="modal">
+    <div class="modal-content" style="overflow-y:scroll!important;">
+      <span class="close">&times;</span>
+      <h2 class="modal-title"></h2>
+      <div class="modal-body"></div>
     </div>
-    <header>
-      <a href="#" class="header-brand">Clean House App</a>
-      <nav>
-        <ul>
-          <li>Add House</li>
-          <li>Edit House</li>
-          <li>About App</li>
-        </ul>
-      </nav>
-    </header>
-    <main>
-      <!-- the name will change and load dynamically -->
-      <h1>Your Rooms</h1>
+  </div>
+  <header>
+    <a href="/" class="header-brand">Clean House App</a>
+    <nav>
+      <ul>
+        <li>Add House</li>
+        <li>Edit House</li>
+        <li>About App</li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <!-- the name will change and load dynamically -->
+    <h1>Your Rooms</h1>
 
-      <section class="house-group">
-        <!-- location will load dynamically -->
-        <ul class="room-list"></ul>
-      </section>
-      <div class="home-btn" id="addingroom">Add Room</div>
-      <a class="home-btn" href="/">Home</a>
-    </main>
+    <section class="house-group">
+      <!-- location will load dynamically -->
+      <ul class="room-list"></ul>
+    </section>
+    <div class="home-btn" id="addingroom">Add Room</div>
+    <a class="home-btn" href="/">Home</a>
+  </main>
 
-    <script type="text/javascript" src="../js/javascript.js"></script>
-    <script type="text/javascript" src="../js/individualroom.js"></script>
-  </body>
+  <script type="text/javascript" src="../js/javascript.js"></script>
+  <script type="text/javascript" src="../js/individualroom.js"></script>
+</body>
+
 </html>

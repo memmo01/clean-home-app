@@ -94,6 +94,7 @@ function createHouseDisplay(data, percent, title, background_image, link) {
   if (background_image === null) {
     background_image = defaultimage;
   }
+  displayWelcomeMessage(percent)
   let backgroundcolor = colorCheck(percent);
 
 
@@ -130,6 +131,30 @@ function createHouseDisplay(data, percent, title, background_image, link) {
   li.append(a);
 
   $(".room-list").append(li);
+}
+
+function displayWelcomeMessage(percent) {
+  let highCleanMessage = ["The house is in great shape keep it up!", "Your house is squeaky clean!", "A clean house is a happy house, your house is overjoyed!"]
+  let mediumCleanMessage = ["Your house is clean. Keep it up!", "I your hope you are enjoying your clean house.", "No need to scrub the house today. The house is a mean clean machine!"]
+  let lowCleanMessage = ["We are getting closer to this place needing a good clean.", "Its looking like the house could use a good scrub", "today would be a good day to clean the house"]
+  if (percent >= 60) {
+    let homeMessage = randommessage(highCleanMessage)
+    $("#homeMessage").text(homeMessage)
+  } else if (percent < 60 && percent >= 20) {
+    let homeMessage = randommessage(mediumCleanMessage)
+    $("#homeMessage").text(homeMessage)
+  }
+  else {
+    let homeMessage = randommessage(lowCleanMessage)
+    $("#homeMessage").text(homeMessage)
+  }
+}
+
+function randommessage(message) {
+  console.log(message)
+  let selected = message[Math.floor(Math.random() * message.length)]
+  console.log(selected)
+  return selected
 }
 
 function colorCheck(percent) {
