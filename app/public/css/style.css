@@ -667,6 +667,39 @@ th {
   cursor: pointer;
 }
 
+
+.accordian-title >h2{
+  text-align: center;
+  padding:25px 0;
+}
+
+.accordian-body{
+  height:0px;
+  transition:1s;
+  overflow: hidden;
+  padding-bottom: 10px;
+}
+
+.accordian-body > table{
+  text-align: center;
+
+}
+.accordian-body th{
+  height:auto;
+  padding:15px 0;
+}
+
+.accordian-body td{
+  padding:5px;
+}
+.accordian-body table{
+  width:80%;
+  margin:auto;
+}
+.table-notes{
+  text-align: left;
+}
+
 /* .remove-task {
   border-radius: 8px !important;
   border: 0 !important;

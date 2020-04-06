@@ -5,6 +5,7 @@ let formsave = [];
 let taskToRemove = [];
 let newchores = [];
 let chores = [];
+let stats;
 
 // create save array
 //when done adding tasks
@@ -17,11 +18,9 @@ function savedInput(check, name) {
   this.chore_name = name;
 }
 if (splitpath[splitpath.length - 2] !== "rooms") {
-  $.get("/api" + path, function(data) {}).done(function(data) {
+  $.get("/api" + path, function (data) { }).done(function (data) {
     //save data for future use on page
     roomdata = data;
-    console.log(data);
-    console.log("try it here");
     constructClientView(data);
   });
 }
@@ -37,7 +36,28 @@ function constructClientView(data) {
   }
 
   $(".banner").css("background-image", "url('" + imgg + "')");
+
+  let lastclean = data[0].last_cleaned.split("/")
+  lastclean = lastclean.join(".")
+  $.get("/api/roomnotes/" + data[0].room_id + "/" + lastclean, function (data) {
+
+    return data
+
+
+  }).then(function (data) {
+    let the = accordionCreation(data)
+    $(".stats-area").replaceWith(the)
+    $(".accordian-title").on("click", function (e) {
+      e.preventDefault()
+      accordionClick(this)
+    })
+  })
+
+
+
 }
+
+
 
 // display a check list of items to complete to make the room clean
 function displayCleanCheck(savecheck) {
@@ -73,10 +93,10 @@ function displayCleanCheck(savecheck) {
   form.append(cleanButton);
 
   modal.append(form);
-  console.log(roomdata);
+
   $(".modal-content").append(noteButton);
 
-  $("#clean-btn-submit").on("click", function(e) {
+  $("#clean-btn-submit").on("click", function (e) {
     e.preventDefault();
     let allcheck = true;
     let formOptions = $("#myform")[0].elements;
@@ -94,7 +114,7 @@ function displayCleanCheck(savecheck) {
   });
 
   function sendToDatabase() {
-    console.log(roomdata);
+
     let now = moment().format("MM/DD/YY");
     let trial = moment()
       .add(5, "days")
@@ -105,15 +125,15 @@ function displayCleanCheck(savecheck) {
       notes: savenotes
     };
 
-    $.post("/api/cleanedroom", data, function() {
-      console.log("posted");
-    }).then(function() {
+    $.post("/api/cleanedroom", data, function () {
+
+    }).then(function () {
       alert("Room is cleaned!");
       window.location.href = "/rooms/" + roomdata[0].house_id + "";
     });
   }
 
-  $("#edit-btn").on("click", function(e) {
+  $("#edit-btn").on("click", function (e) {
     e.preventDefault();
     saveData();
     clearDiv("#edit-btn");
@@ -138,7 +158,7 @@ function displayCleanCheck(savecheck) {
     btnContainer.append(save);
     $(".modal-content").append(btnContainer);
 
-    $("#cancel-btn").on("click", function(e) {
+    $("#cancel-btn").on("click", function (e) {
       e.preventDefault();
       clearDiv(
         ".btn-container",
@@ -151,7 +171,7 @@ function displayCleanCheck(savecheck) {
       displayCleanCheck(true);
     });
 
-    $("#save-btn").on("click", function(e) {
+    $("#save-btn").on("click", function (e) {
       e.preventDefault();
       savenotes = $("textarea").val();
       completeNotes();
@@ -173,7 +193,7 @@ function completeNotes() {
   clearDiv("#save-btn");
   $(".modal-content").append(edit);
 
-  $("#edit-text-btn").on("click", function(e) {
+  $("#edit-text-btn").on("click", function (e) {
     e.preventDefault();
 
     let save = $("<img>", {
@@ -187,7 +207,7 @@ function completeNotes() {
 
     loadNoteTaker();
     $(".modal-content").append(save);
-    $("#save-btn").on("click", function(e) {
+    $("#save-btn").on("click", function (e) {
       e.preventDefault();
       savenotes = $("textarea").val();
       completeNotes();
@@ -241,7 +261,7 @@ function saveData() {
     let obj = new savedInput(formOptions[i].checked, formOptions[i].name);
     formsave.push(obj);
   }
-  console.log(formsave);
+
 }
 
 //create a clearing div function
@@ -249,14 +269,14 @@ function saveData() {
 function clearDiv(...div) {
   for (let i = 0; i < div.length; i++) {
     $("" + div[i] + "").remove();
-    console.log(div[i]);
+
   }
 }
 
-$("#edit-room-btn").on("click", function(e) {
+$("#edit-room-btn").on("click", function (e) {
   e.preventDefault();
 
-  console.log(path);
+
   populateRoomEdit(false);
 });
 
@@ -293,12 +313,12 @@ function createTaskList() {
   return ul;
 }
 
-$("#delete-btn").on("click", function(e) {
+$("#delete-btn").on("click", function (e) {
   e.preventDefault();
   let confirmation = confirm("Are you sure you want to delete this room?");
   let room = { roomid: splitpath[splitpath.length - 1] };
   if (confirmation === true) {
-    $.post("/delete/room", room, function() {
+    $.post("/delete/room", room, function () {
       console.log("deleted");
     });
     alert("room " + roomdata[0].name + " has been deleted");
@@ -328,41 +348,38 @@ function createOption(data) {
 }
 
 function pullnewInfo() {
-  $.get("/api" + path, function(data) {}).done(function(data) {
+  $.get("/api" + path, function (data) { }).done(function (data) {
     //save data for future use on page
     roomdata = data;
   });
 }
 function updateDatabase(addchoredata, newroom) {
-  console.log(addchoredata);
-  console.log(newroom);
-  console.log("made it to update database");
+
   if (newroom === "addroom") {
     let now = moment().format("MM/DD/YY");
     let houseId = splitpath[splitpath.length - 1];
     addchoredata.last_cleaned = now;
     addchoredata.house_id = houseId;
-    $.post("/api/newroom", addchoredata, function(data) {
+    $.post("/api/newroom", addchoredata, function (data) {
       console.log("sent");
-    }).then(function() {
+    }).then(function () {
       $.get("/");
     });
   } else {
-    console.log("MUAHAHAAHHAHA");
-    console.log(addchoredata);
-    $.post("/api/addchore", addchoredata, function() {
+
+    $.post("/api/addchore", addchoredata, function () {
       console.log("sent");
     });
   }
 }
 
-$("#clean-btn").on("click", function(e) {
+$("#clean-btn").on("click", function (e) {
   e.preventDefault();
   $(".modal").css("display", "block");
   displayCleanCheck(false);
 });
 
-$(".close").on("click", function(e) {
+$(".close").on("click", function (e) {
   e.preventDefault();
   chores = [];
   $("body").css("overflow", "auto");
@@ -430,13 +447,13 @@ function populateRoomEdit(newroom) {
   form.append(daysOption);
   form.append(savebtn);
 
-  $(".remove-task").on("click", function(e) {
+  $(".remove-task").on("click", function (e) {
     e.preventDefault();
     runRemove(this);
     console.log(chores);
   });
 
-  $("#add-task-btn").on("click", function(e) {
+  $("#add-task-btn").on("click", function (e) {
     e.preventDefault();
     let inputValue = $("#add-task")
       .val()
@@ -463,13 +480,13 @@ function populateRoomEdit(newroom) {
       ul.append(li);
     }
 
-    $(".remove-task").on("click", function(e) {
+    $(".remove-task").on("click", function (e) {
       e.preventDefault();
       runRemove(this);
-      console.log(chores);
+
     });
   });
-  $("#save-room-update").on("click", function(e) {
+  $("#save-room-update").on("click", function (e) {
     e.preventDefault();
     let urlpath = window.location.pathname;
     let urlarray = urlpath.split("/");
@@ -509,7 +526,77 @@ function populateRoomEdit(newroom) {
     window.location.reload();
   });
 }
-$("#addingroom").on("click", function(e) {
+$("#addingroom").on("click", function (e) {
   e.preventDefault();
   populateRoomEdit(true);
 });
+
+
+
+
+
+
+function accordionCreation(data) {
+
+  let notes = "no notes listed"
+  let title = "Recent Activity"
+
+  let div = $("<div>")
+  let accordiantitlediv = $("<div>", { class: "accordian-title" })
+  let accordiantitleh2 = $("<h2>", { text: title })
+
+  accordiantitlediv.append(accordiantitleh2)
+  div.append(accordiantitlediv)
+
+  let accordianbody = $("<div>", { class: "accordian-body" })
+  accordianbody.attr("data-collapsed", true)
+
+  let table = $("<table>")
+  let last_cleanedhead = $("<th>", { text: "Last Cleaned" })
+  let last_cleaneddata = $("<td>", { text: data[0].date_cleaned })
+
+  let notesth = $("<th>", { text: "Cleaning Notes" })
+  if (data[0].notes) {
+    notes = data[0].notes
+  }
+  let notetd = $("<td>", { text: notes })
+
+  let tablearray = [last_cleanedhead, last_cleaneddata, notesth, notetd]
+
+
+  for (let i = 0; i < tablearray.length; i++) {
+    let row = $("<tr>")
+    row.append(tablearray[i])
+    table.append(row)
+
+  }
+
+
+
+
+
+
+  accordianbody.append(table)
+  div.append(accordianbody)
+  return div
+
+
+
+}
+
+
+//accordian for the stats showing
+function accordionClick(data) {
+  accordbody = $(data).next()[0]
+  if (accordbody.className === "accordian-body") {
+
+    if ($(accordbody).data("collapsed") === true) {
+      bodyHeight = accordbody.scrollHeight
+      $(accordbody).css("height", bodyHeight + "px")
+      $(accordbody).data("collapsed", false)
+    } else if ($(accordbody).data("collapsed") === false) {
+      $(accordbody).css("height", "0px")
+      $(accordbody).data("collapsed", true)
+    }
+  }
+}

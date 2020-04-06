@@ -11,19 +11,19 @@ if (urlpath === "/") {
   house = urlarray[urlarray.length - 1];
   console.log(house);
 }
-$.get("/house/" + house + "", function(data) {})
-  .done(function(data) {
-    console.log(urlarray);
+$.get("/house/" + house + "", function (data) { })
+  .done(function (data) {
+
     let roompath = urlarray[urlarray.length - 2];
-    console.log(roompath);
+
     if (roompath === "rooms") {
       constructData(data, false);
     } else {
       constructData(data, true);
     }
   })
-  .fail(function(err) {
-    console.log(err);
+  .fail(function (err) {
+
   });
 
 let cleanpoints = 0; /* add room percentage*/
@@ -51,7 +51,7 @@ function constructData(data, wholeHouse) {
 
 // gets the amount of time left to clean and turns it into a percentage
 function checkRoomStats(data, wholeHouse) {
-  console.log("made checkroomstats");
+
   let timeframe = parseInt(data.cleaning_time);
   let now = moment().format("MM/DD/YY");
   let end = moment(data.last_cleaned).add(timeframe, "days");
@@ -67,12 +67,12 @@ function checkRoomStats(data, wholeHouse) {
   wholeHouse
     ? (cleanpoints += percentage) //this add the percentages of rooms up for house view
     : createHouseDisplay(
-        data,
-        percentage,
-        data.room,
-        data.img,
-        "/rooms/" + cleanName + "/" + data.id
-      ); // create individual room data if on rooms page
+      data,
+      percentage,
+      data.room,
+      data.img,
+      "/rooms/" + cleanName + "/" + data.id
+    ); // create individual room data if on rooms page
 }
 
 function urlPrep(input) {
@@ -95,8 +95,7 @@ function createHouseDisplay(data, percent, title, background_image, link) {
     background_image = defaultimage;
   }
   let backgroundcolor = colorCheck(percent);
-  console.log("made createhousedisplay");
-  console.log(data);
+
 
   let li = $("<li>");
   let a = $("<a>");

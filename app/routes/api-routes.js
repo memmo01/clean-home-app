@@ -1,34 +1,51 @@
 let connection = require("../config/connection.js");
 
-module.exports = function(app) {
-  app.get("/house/:userId", function(req, res) {
+module.exports = function (app) {
+  app.get("/house/:userId", function (req, res) {
     let queryRooms =
       "SELECT house_db.name AS location, rooms_db.name AS room, rooms_db.cleaning_timeframe AS timeframe, rooms_db.last_cleaned AS last_cleaned, house_db.id AS house_id,rooms_db.cleaning_timeframe AS cleaning_time, rooms_db.img, house_db.img AS image , rooms_db.id FROM house_db JOIN rooms_db ON house_db.id = ? AND rooms_db.house_id = ?";
 
     connection.query(
       queryRooms,
       [req.params.userId, req.params.userId],
-      function(err, result) {
+      function (err, result) {
         res.json(result);
         console.log(result);
       }
     );
   });
 
-  app.get("/api/rooms/:roomName/:roomId", function(req, res) {
+  app.get("/api/rooms/:roomName/:roomId", function (req, res) {
+
     let individualRoomData =
-      "SELECT chore_db.chore_name,chore_db.room_id,rooms_db.cleaning_timeframe, rooms_db.name,rooms_db.house_id AS house_id, rooms_db.img FROM chore_db JOIN rooms_db ON rooms_db.id =" +
+      "SELECT chore_db.chore_name,chore_db.room_id,rooms_db.cleaning_timeframe, rooms_db.name,rooms_db.house_id AS house_id,rooms_db.last_cleaned, rooms_db.img FROM chore_db JOIN rooms_db ON rooms_db.id =" +
       req.params.roomId +
       " AND chore_db.room_id =" +
-      req.params.roomId +
-      "";
-    connection.query(individualRoomData, function(err, result) {
-      res.json(result);
-      console.log(result);
-    });
-  });
+      req.params.roomId + "";
 
-  app.post("/api/cleanedroom", function(req, res) {
+
+    connection.query(individualRoomData, function (err, result) {
+      res.json(result)
+    })
+
+
+
+  })
+  app.get("/api/roomnotes/:id/:date", function (req, res) {
+
+    let roomnotes = "SELECT * FROM room_cleaned WHERE room_id =? AND date_cleaned =?";
+    let y = req.params.date.split(".")
+    let t = y.join("/")
+
+    connection.query(roomnotes, [req.params.id, t], function (err, results) {
+
+      res.json(results)
+    })
+  })
+
+
+
+  app.post("/api/cleanedroom", function (req, res) {
     let CleanRoomData =
       "INSERT INTO room_cleaned (date_cleaned, room_id, notes) VALUES (?,?,?)";
     let updateLastClean = "UPDATE rooms_db SET last_cleaned = ? WHERE id = ? ";
@@ -36,8 +53,8 @@ module.exports = function(app) {
     connection.query(
       CleanRoomData,
       [req.body.last_cleaned, req.body.room_id, req.body.notes],
-      function(err, result) {
-        console.log("saved successfully");
+      function (err, result) {
+
 
         res.end();
       }
@@ -46,14 +63,14 @@ module.exports = function(app) {
     connection.query(
       updateLastClean,
       [req.body.last_cleaned, req.body.room_id],
-      function(err, results) {
+      function (err, results) {
         res.end();
       }
     );
   });
 
-  app.post("/api/addchore", function(req, res) {
-    console.log(req.body);
+  app.post("/api/addchore", function (req, res) {
+
     let addchores = "INSERT INTO chore_db (chore_name, room_id) VALUES (?,?)";
 
     let removechores =
@@ -61,7 +78,7 @@ module.exports = function(app) {
 
     let updateroom =
       "UPDATE rooms_db SET name = ? , cleaning_timeframe = ? WHERE id = ?";
-    console.log(req.body.newchores);
+
 
     if (req.body.newchores) {
       for (let i = 0; i < req.body.newchores.length; i++) {
@@ -80,37 +97,22 @@ module.exports = function(app) {
     connection.query(
       updateroom,
       [req.body.name, req.body.cleaning_timeframe, req.body.room_id],
-      function() {
-        console.log("III MAAADDEEE ITTT");
-        console.log(req.body.name);
-        console.log(req.body.cleaning_timeframe);
-        console.log("FDSAF");
-        console.log(req.body);
-        console.log("FDSAF");
+      function () {
+
         res.end();
       }
     );
 
-    // connection.query(addchores, [req.body.new_chore]);
-
-    // connection.query(
-    //   CleanRoomData,
-    //   [req.body.last_cleaned, req.body.room_id, req.body.notes],
-    //   function(err, result) {
-    //     console.log("saved successfully");
-
-    // res.end();/
-    //   }
   });
 
-  app.post("/delete/room", function(req, res) {
+  app.post("/delete/room", function (req, res) {
     let deleteroom = "DELETE FROM rooms_db WHERE id =?";
 
-    connection.query(deleteroom, [req.body.roomid], function() {
-      console.log("room has been deleted");
+    connection.query(deleteroom, [req.body.roomid], function () {
+      console.log("room deleted")
     });
   });
-  app.post("/api/newroom", function(req, res) {
+  app.post("/api/newroom", function (req, res) {
     let newroominfo =
       "INSERT INTO rooms_db (name, cleaning_timeframe, last_cleaned, house_id) VALUES (?,?,?,?) ";
 
@@ -130,7 +132,7 @@ module.exports = function(app) {
     connection.query(
       addchoreinfo,
       [req.body.name, req.body.cleaning_timeframe, req.body.last_cleaned],
-      function(err, res) {
+      function (err, res) {
         newroomid = res[0].id;
         addchoredata(newroomid);
       }
@@ -141,7 +143,7 @@ module.exports = function(app) {
         connection.query(
           updatechorelist,
           [req.body.newchores[i], newroomid],
-          function() {
+          function () {
             console.log("added");
           }
         );
