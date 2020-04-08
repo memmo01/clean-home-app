@@ -503,8 +503,7 @@ main .house-group ul li {
   border: 3px solid rgba(255, 255, 255, 0.7);
 }
 
-#house-1 {
-  /* background-image: url("../images/JLIEE7006.JPG"); */
+.house-1 {
   background-size: cover;
   background-color: gray;
   height: 215px;
@@ -536,9 +535,6 @@ main .house-group ul li {
 }
 
 .house-group ul li .progress-bar {
-  /* width: 95%; */
-  /* background-color: green; */
-  /* background-color: rgba(255, 0, 0, 0.8); */
   height: 10px;
   margin: 20px 0;
 }
@@ -574,14 +570,15 @@ display: flex;
 .rm-action-btn{
     padding: 12px 0px;
     height: 50px;
-    width: 182px;
+    width: 30%;
     text-align: center;
     border: 2px solid rgba(0, 0, 0, 0.4);
     border-radius: 10%;
     font-size: 20px;
     display: grid;
     align-items: center;
-    margin: 5px 5px;
+    color:black;
+    margin: 5px 1.5%;
 }
 .arrow-down {
   width: 0; 
@@ -681,6 +678,13 @@ th {
   margin: 30px auto;
   padding: 5px;
 }
+th{
+  font-size: 20px;
+  font-weight: 600;
+}
+td{
+  font-size:20px;
+}
 
 .statslink{
   display: block;
@@ -689,6 +693,9 @@ th {
   border: 1px solid black;
   width: fit-content;
   margin: 20px auto;
+}
+.statslink{
+  cursor: pointer;
 }
 #stats-title{
   text-align:center;
@@ -718,7 +725,7 @@ th {
   padding: 20px;
   min-height: 100%;
   background-color: white;
-  /* position: fixed; */
+  position: relative;
   box-shadow: 3px 3px 13px rgba(0, 0, 0, 0.5);
 }
 
@@ -927,16 +934,86 @@ th {
 /* END CUSTOM CHECKBOX */
 
 @media (min-width: 778px) {
+  .room-list{
+    text-align:center;
+  }
+  #all-rooms{
+    margin: auto;
+    display: block;
+    width: 90%;
+    text-align: center;
+  }
   #individual-room .modal-content,
   #room-list .modal-content {
     top: 100px;
     width: 30%;
-    animation: modalmove 1s;
+    /* animation: modalmove 1s; */
     height: fit-content;
     height: -moz-fit-content;
     border-radius: 15px;
   }
+
+  .house-1 {
+    background-size: cover;
+    background-color: gray;
+    
+    width:31%;
+    margin: 0 3.5%;
+    display:inline-flex;
+  }
+  .house-group{
+    margin-bottom:40px;
+  }
+  
+
+
+  .house-overlay{
+    width:260px;
+  }
+  main .house-group ul li{
+    width:276px;
+    margin:10px 30px;
+  }
+  
+  .home-btn{
+    width:200px;
+    margin:10px auto;
+  }
+
+  #individual-room .banner{
+    height: 280px;
+width: 280px;
+margin: auto;
+border-radius: 50%;
+  }
+  .room-action-container{
+    width: 360px;
+margin: auto;
+  }
+
+  .accordian-body table{
+    width:60%;
+    margin: auto;
+  }
+  .statslink{
+    width:200px;
+    text-align: center;
+    padding:10px 0;
+  }
+  #individual-room .action-icon{
+    position:absolute;
+  }
+  #individual-room .modal-content{
+    min-height:450px;
+  }
+
+  #individual-room .modal-content,
+  #room-list .modal-content {
+    top: 20px;}
+
+
 }
+
 
 /* keyframes */
 @keyframes modalmove {
@@ -944,6 +1021,6 @@ th {
     top: 50px;
   }
   to {
-    top: 100px;
+    top: 50px;
   }
 }

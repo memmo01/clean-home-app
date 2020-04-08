@@ -122,7 +122,7 @@ function createHouseDisplay(data, percent, title, background_image, link) {
 
   a.attr("href", "" + link + "");
   div.addClass("house-overlay");
-  li.attr("id", "house-1");
+  li.addClass("house-1");
   li.css("background-image", "url('" + background_image + "')");
   div.append(h3);
   div.append(percentClean);
