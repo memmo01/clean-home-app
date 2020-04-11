@@ -580,6 +580,9 @@ display: flex;
     color:black;
     margin: 5px 1.5%;
 }
+.rm-action-btn{
+  cursor: pointer;
+}
 .arrow-down {
   width: 0; 
   height: 0; 
@@ -598,6 +601,8 @@ display: flex;
   border-bottom: 10px solid black;
   margin: 10px auto 0px;
 }
+
+.arrow-down:hover , .arrow-up:hover,.accordian-title>h2:hover{cursor: pointer;}
 .rm-action-btn:visited{
   color:black;
 }
@@ -811,11 +816,16 @@ td{
   left: -36px;
 }
 .remove-list-conainer {
-  width: 60%;
+  max-width:200px;
+  width: fit-content;
+  
   margin: auto;
 }
 .remove-list {
   font-size: 25px;
+  list-style-position: inside;
+text-indent: -1.5em;
+padding-top:10px;
 }
 #save-room-update {
   margin: auto;
@@ -946,7 +956,7 @@ td{
   #individual-room .modal-content,
   #room-list .modal-content {
     top: 100px;
-    width: 30%;
+    width: 500px;
     /* animation: modalmove 1s; */
     height: fit-content;
     height: -moz-fit-content;
@@ -1004,7 +1014,7 @@ margin: auto;
     position:absolute;
   }
   #individual-room .modal-content{
-    min-height:450px;
+    min-height:550px;
   }
 
   #individual-room .modal-content,

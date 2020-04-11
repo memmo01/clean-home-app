@@ -13,6 +13,8 @@ let stats;
 // when notes are created, it will be stored in save names variable
 let savenotes;
 
+
+
 function savedInput(check, name) {
   this.checked = check;
   this.chore_name = name;
@@ -50,19 +52,13 @@ function constructClientView(data) {
 
 
   }).then(function (data) {
-    let recentactivity = accordionCreation(data[0], "Recent Activity")
 
     let statslink = $("<a>", {
       text: "View All Activity",
       href: "/roomstats/" + data[0].room_id,
       class: "statslink"
     })
-    $(".stats-area").replaceWith(recentactivity)
-    $(".accordian-body").append(statslink)
-    $(".accordian-title").on("click", function (e) {
-      e.preventDefault()
-      accordionClick(this)
-    })
+    $(".stats-area").replaceWith(statslink)
   })
 
 
@@ -126,15 +122,20 @@ function displayCleanCheck(savecheck) {
   });
 
   function sendToDatabase() {
-
+    let chores = []
     let now = moment().format("MM/DD/YY");
     let trial = moment()
       .add(5, "days")
       .format("MM/DD/YY");
+    for (let i = 0; i < roomdata.length; i++) {
+      chores.push(roomdata[i].chore_name)
+    }
+
     let data = {
       last_cleaned: now,
       room_id: roomdata[0].room_id,
-      notes: savenotes
+      notes: savenotes,
+      tasks: chores
     };
 
     $.post("/api/cleanedroom", data, function () {
@@ -331,7 +332,7 @@ $("#delete-btn").on("click", function (e) {
   let room = { roomid: splitpath[splitpath.length - 1] };
   if (confirmation === true) {
     $.post("/delete/room", room, function () {
-      console.log("deleted");
+
     });
     alert("room " + roomdata[0].name + " has been deleted");
     window.location.href = "/rooms/" + roomdata[0].house_id + "";
@@ -462,7 +463,7 @@ function populateRoomEdit(newroom) {
   $(".remove-task").on("click", function (e) {
     e.preventDefault();
     runRemove(this);
-    console.log(chores);
+
   });
 
   $("#add-task-btn").on("click", function (e) {
@@ -548,18 +549,20 @@ $("#addingroom").on("click", function (e) {
 
 
 
-function accordionCreation(data, newtitle) {
+function accordionCreation(data, newtitle, chores) {
 
   let notes = "no notes listed"
   let title = newtitle
 
   let div = $("<div>")
   let accordiantitlediv = $("<div>", { class: "accordian-title" })
+
   let accordiantitleh2 = $("<h2>", { text: title })
   let arrow = $("<div>", { class: "arrow-down" })
-  accordiantitleh2.append(arrow)
+
 
   accordiantitlediv.append(accordiantitleh2)
+  accordiantitlediv.append(arrow)
   div.append(accordiantitlediv)
 
   let accordianbody = $("<div>", { class: "accordian-body" })
@@ -568,6 +571,14 @@ function accordionCreation(data, newtitle) {
   let table = $("<table>")
   let last_cleanedhead = $("<th>", { text: "Last Cleaned" })
   let last_cleaneddata = $("<td>", { text: data.date_cleaned })
+  let chorehead = $("<th>", { text: "Chores Completed" })
+  let choredata = []
+
+  for (let t = 0; t < chores.length; t++) {
+    let chorecompleted = $("<td>", { text: chores[t] })
+    choredata.push(chorecompleted)
+  }
+
 
   let notesth = $("<th>", { text: "Cleaning Notes" })
   if (data.notes) {
@@ -575,7 +586,7 @@ function accordionCreation(data, newtitle) {
   }
   let notetd = $("<td>", { text: notes })
 
-  let tablearray = [last_cleanedhead, last_cleaneddata, notesth, notetd]
+  let tablearray = [last_cleanedhead, last_cleaneddata, chorehead, ...choredata, notesth, notetd]
 
 
   for (let i = 0; i < tablearray.length; i++) {
@@ -584,34 +595,53 @@ function accordionCreation(data, newtitle) {
     table.append(row)
 
   }
+
   accordianbody.append(table)
   div.append(accordianbody)
+
   return div
 
 
 
 }
 
+
 // populate room stats page
 function getroomstats(roomid) {
-  console.log(roomdata)
+
   $.get("/api/roomnotes/" + roomid, function (data) {
-    console.log(data)
-    console.log(roomdata)
+
     $("#indiv-back-btn").attr("href", "/rooms/" + data[0].name + "/" + data[0].room_id)
     $("#stats-title").text(data[0].name + " Stats ")
+
     for (let i = 0; i < data.length; i++) {
-      let x = accordionCreation(data[i], data[i].date_cleaned)
-      $(".house-group").append(x)
+      let chores = []
+      $.get("/api/returnchores/" + data[i].id + "", function (data) {
+
+
+
+        for (let i = 0; i < data.length; i++) {
+          chores.push(data[i].task)
+        }
+
+
+      }).then(function () {
+
+        let x = accordionCreation(data[i], data[i].date_cleaned, chores)
+
+        $(".house-group").append(x)
+      })
     }
 
-  }).then(function () {
-    $(".accordian-title").on("click", function (e) {
-      e.preventDefault()
-      accordionClick(this)
-    })
   })
+
 }
+
+document.addEventListener("click", function (e) {
+  if (e.target.parentNode.className === "accordian-title") {
+    accordionClick(e.target.parentNode)
+  }
+})
 
 
 //accordian for the stats showing
@@ -633,7 +663,6 @@ function accordionClick(data) {
 }
 function updateArrow(data, direction) {
   if (direction === "up") {
-    console.log(data)
     let y = $(data).find('.arrow-up')
     $(y).addClass("arrow-down")
     $(y).removeClass("arrow-up")

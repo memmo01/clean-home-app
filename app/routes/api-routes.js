@@ -48,6 +48,8 @@ module.exports = function (app) {
 
   })
 
+
+
   app.get("/api/roomnotes/:id", function (req, res) {
 
 
@@ -59,22 +61,38 @@ module.exports = function (app) {
 
   })
 
+  app.get("/api/returnchores/:id", function (req, res) {
+    let getchores = "SELECT task FROM tasks_completed WHERE room_cleaned_id = ?"
+
+
+    connection.query(getchores, [req.params.id], function (err, results) {
+      console.log(results)
+      res.json(results)
+    })
+  })
+
 
 
   app.post("/api/cleanedroom", function (req, res) {
+    let newid = "";
     let CleanRoomData =
       "INSERT INTO room_cleaned (date_cleaned, room_id, notes) VALUES (?,?,?)";
     let updateLastClean = "UPDATE rooms_db SET last_cleaned = ? WHERE id = ? ";
+    let addtaskscomplete = "INSERT INTO tasks_completed (room_cleaned_id, task) VALUES (?,?)";
 
     connection.query(
       CleanRoomData,
       [req.body.last_cleaned, req.body.room_id, req.body.notes],
       function (err, result) {
-
+        newid = result.insertId
 
         res.end();
-      }
-    );
+        for (var i = 0; i < req.body.tasks.length; i++) {
+
+          connection.query(addtaskscomplete, [newid, req.body.tasks[i]], function (err, results) { res.end() })
+        }
+
+      });
 
     connection.query(
       updateLastClean,
@@ -83,7 +101,13 @@ module.exports = function (app) {
         res.end();
       }
     );
-  });
+
+
+  }
+
+
+
+  )
 
   app.post("/api/addchore", function (req, res) {
 
